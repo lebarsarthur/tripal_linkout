@@ -4,26 +4,6 @@
  * Menu callbacks.
  */
 
-function handle_relative_links($links) {
-    $http_host = $_SERVER['HTTP_HOST'];
-    $retval = [];
-    foreach ($links as $link) {
-        #if (substr($link['href'], 0, 5) != 'http:') {
-        if (substr($link['href'], 0, 1) == '/') {
-            $link['href'] = '//'. $http_host . $link['href'];
-        }
-        $retval[] = $link;
-    }
-    return $retval;
-}
-
-//needed in the CORS context with the cache-busting strategy we've adopted
-function set_response_headers() {
-    drupal_add_http_header('Access-Control-Allow-Headers', 'Pragma');
-    drupal_add_http_header('Access-Control-Allow-Headers', 'Cache-Control', TRUE);
-    drupal_add_http_header('Access-Control-Allow-Headers', 'If-Modified-Since', TRUE);
-}
-
 /**
  * This version takes the gene "name", infers the species from the 5-letter prefix and delegates to the more fully specified version
  */
@@ -46,329 +26,64 @@ SQL;
 }
 
 function family_representative_linkout_json($genus, $species, $family_representative) {
-    //find the gene by use of the "family representative" (ie label used for the phylonode, 
+    //find the gene by use of the "family representative" (ie label used for the phylonode,
     //typically a polypeptide name (we stole this trick from the phylotree module)
-        $sql = <<<SQL
-          SELECT f.name AS gene_name, f.uniquename AS gene_uniquename
-          FROM chado.featureprop fp, chado.feature f
-          WHERE fp.type_id = (SELECT cvterm_id FROM chado.cvterm
-                              WHERE NAME = 'family representative')
-          AND fp.value = :family_representative
-          AND fp.feature_id = f.feature_id
-SQL;
-        $args = array(':family_representative' => $family_representative);
-        $result = chado_query($sql, $args);
-        $fields = $result->fetchAssoc();
-    full_gene_linkout_json($genus,$species,$fields['gene_name'],$fields['gene_uniquename'],$family_representative);
+    $sql = "SELECT f.name AS gene_name, f.uniquename AS gene_uniquename
+          FROM chado.feature f
+          WHERE f.uniquename = :family_representative";
+
+    $args = array(':family_representative' => $family_representative);
+    $result = chado_query($sql, $args);
+    $fields = $result->fetchAssoc();
+    full_gene_linkout_json($genus, $species, $fields['gene_name'], $fields['gene_uniquename'], $family_representative);
 }
 
 function full_gene_linkout_json($genus,$species,$gene_name,$gene_uniquename,$transcript_name) {
     $link =  [];
-    //in what follows, the gene_name will typically not want the gensp. prefix, though this will be
-    //readded where need be
-    $gensp = substr($gene_name, 0, 6);
-    if (isset($gene_name)) {
-    $gene_name = substr($gene_name, 6);
-    }
-    $transcript_name = substr($transcript_name, 6);
-    if (isset($gene_uniquename)) {
-        $link[] = array(
-            'href' => '/feature/'.$genus.'/'.$species.'/gene/'.$gene_uniquename,
-            'text' => 'View LIS gene page for : ' . $gene_name,
-        );
-    }
-    if (isset($gene_name)) {
-        $link[] = array(
-            'href' => '/lis_context_viewer/#/search/lis/' . $gensp.$gene_name,
-            'text' => 'Find similar genomic contexts at LIS for : ' . $gene_name,
-        );
-    }
-    if (isset($gene_name)) {
-        $link[] = array(
-            'href' => 'https://mines.legumeinfo.org/legumemine/portal.do?class=Gene&externalids=' . $gensp.$gene_name,
-            'text' => 'View LegumeMine gene report for : ' . $gene_name,
-        );
-    }
-    if ($genus == 'Glycine' && $species == 'max') {
 
-        $link[] = array(
-            'href' => 'http://www.soybase.org/sbt/search/search_results.php?category=FeatureName&search_term=' . $gene_name,
-            'text' => 'view at SoyBase: ' . $gene_name,
-        );
-        $link[] = array(
-            'href' => 'https://legumefederation.org/lis_context_viewer/#/search/lis/glyma.' . $gene_name . '?sources=lis%2Clfo&regexp=arath&neighbors=20&order=edit',
-            'text' => 'Look for Arabidopsis thaliana microsyntenic region for ' . $gene_name,
-        );
-        $link[] = array(
-            'href' => 'http://phytozome.jgi.doe.gov/pz/portal.html#!results?search=0&crown=1&star=0&method=4433&searchText=' . $gene_name,
-            'text' => 'view at Phytozome: ' . $gene_name,
-        );
-        $link[] = array(
-            'href' => 'http://soykb.org/gene_card.php?gene=' . $gene_name,
-            'text' => 'view at SoyKB: ' . $gene_name,
-        );
+    $sp_split = explode(' ', $species);
+    $species = $sp_split[0];
 
-/*
-        $link[] = array(
-            'href' => 'http://www.genomicus.biologie.ens.fr/genomicus-plants/cgi-bin/search.pl?view=default&amp;query=' . $gene_name,
-            'text' => 'view at Genomicus: ' . $gene_name,
-        );
-*/
+    $sp_links = array();
+    $sp_links['bombyx_mori'] = array('http://example.org/%uniquename%');
+
+    $org_str = strtolower($genus).'_'.$species;
+
+    $replacements = array(
+        '%genus%' => $genus,
+        '%lower_genus%' => strtolower($genus),
+        '%species%' => $species,
+        '%name%' => $gene_name,
+        '%uniquename%' => $gene_uniquename,
+    );
+
+    if (array_key_exists($org_str, $sp_links)) {
+
+        foreach ($sp_links[$org_str] as $key => $linkstr) {
+            $link[] = array(
+                'href' => str_replace(array_keys($replacements), $replacements, $linkstr),
+                'text' => 'View gene page for: ' . $gene_name,
+            );
+        }
     }
-    else if ($genus == 'Phaseolus' && $species == 'vulgaris') {
-        $link[] = array(
-            'href' => 'http://phytozome.jgi.doe.gov/pz/portal.html#!results?search=0&crown=1&star=0&method=5084&searchText=' . $gene_name,
-            'text' => 'view at Phytozome: ' . $gene_name,
-        );
-        $link[] = array(
-            'href' => '/genomes/gbrowse/Pv1.0?query=name=' . $gene_name,
-            'text' => 'view at LIS Pv1.0 GBrowse: ' . $gene_name,
-        );
-    }
-    else if ($genus == 'Lotus' && $species == 'japonicus') {
-        $link[] = array(
-            'href' => 'https://lotus.au.dk/view/gene/' . $gene_name,
-            'text' => 'view at Lotus Base: ' . $gene_name,
-        );
-        $link[] = array(
-            'href' => '/genomes/gbrowse/Lj3.0?query=name=' . $gene_name,
-            'text' => 'view at LIS Lj3.0 GBrowse: ' . $gene_name,
-        );
-    }
-    else if ($genus == 'Cicer' && $species == 'arietinum_CDCFrontier') {
-        $gene_name = preg_replace('/^CDCFrontier\./','',$gene_name);
-        $link[] = array(
-            'href' => '/genomes/gbrowse/cicar.CDCFrontier.v1.0?query=name=' . $gene_name,
-            'text' => 'view at LIS Ca1.0 GBrowse: ' . $gene_name,
-        );
-        /*
-        $link[] = array(
-            'href' => 'https://mines.legumeinfo.org/chickpeamine/portal.do?class=Gene&externalids=CDCFrontier.'. $gene_name,
-            'text' => 'view in ChickpeaMine: ' . $gene_name ,
-        );
-        */
-        $link[] = array(
-            'href' => 'https://legumefederation.org/lis_context_viewer/#/search/lis/cicar.CDCFrontier.' . $gene_name . '?sources=lis%2Ccicre&regexp=cicre|cicar|medtr&order=edit',
-            'text' => 'Look for Cicer reticulatum microsyntenic region for ' . $gene_name,
-        );
-        $link[] = array(
-            'href' => 'http://phytozome.jgi.doe.gov/pz/portal.html#!results?search=0&crown=1&star=0&method=5236&searchText=' . $gene_name,
-            'text' => 'view at Phytozome: ' . $gene_name,
-        );
-    }
-    else if ($genus == 'Cicer' && $species == 'arietinum_ICC4958') {
-        $link[] = array(
-            'href' => '/genomes/gbrowse/cicar.ICC4958.v2.0?query=name=cicar.' . $gene_name,
-            'text' => 'view at LIS Cicer arietinum ICC 4958 genome v2.0 GBrowse: ' . $gene_name,
-        );
-        /*
-        $link[] = array(
-            'href' => 'https://mines.legumeinfo.org/chickpeamine/portal.do?class=Gene&externalids='. $gene_name,
-            'text' => 'view in ChickpeaMine: ' . $gene_name,
-        );
-        */
-        $link[] = array(
-            'href' => 'https://legumefederation.org/lis_context_viewer/#/search/lis/cicar.' . $gene_name . '?sources=lis%2Ccicre&regexp=cicre|cicar|medtr&order=edit',
-            'text' => 'Look for Cicer reticulatum microsyntenic region for ' . $gene_name,
-        );
-    }
-    else if ($genus == 'Cajanus' && $species == 'cajan') {
-        $link[] = array(
-            'href' => '/genomes/gbrowse/Cc1.0?query=name=' . $gene_name,
-            'text' => 'view at LIS Cc1.0 GBrowse: ' . $gene_name,
-        );
-    }
-    else if ($genus == 'Trifolium' && $species == 'pratense') {
-        $link[] = array(
-            'href' => '/genomes/gbrowse/Tp2.0?query=name=' . $gene_name,
-            'text' => 'view at LIS Tp2.0 GBrowse: ' . $gene_name,
-        );
-        $link[] = array(
-            'href' => 'http://phytozome.jgi.doe.gov/pz/portal.html#!results?search=0&crown=1&star=0&method=5081&searchText=' . $gene_name,
-            'text' => 'view at Phytozome: ' . $gene_name,
-        );
-    }
-    else if ($genus == 'Vigna' && $species == 'unguiculata') {
-        $link[] = array(
-            'href' => '/genomes/gbrowse/vigun.IT97K-499-35.gnm1?query=name=' . $gene_name,
-            'text' => 'view at LIS vigun.IT97K-499-35.gnm1 GBrowse: ' . $gene_name,
-        );
-        $link[] = array(
-            'href' => 'http://phytozome.jgi.doe.gov/pz/portal.html#!results?search=0&crown=1&star=0&method=5235&searchText=' . $gene_name,
-            'text' => 'view at Phytozome: ' . $gene_name,
-        );
-        //why do I have this special case; should we refactor and get it for everyone?
-        $link[] = array(
-            'href' => 'https://legumefederation.org/lis_context_viewer/#/search/lis/vigun.' . $gene_name .'?sources=lis,lfo&neighbors=15' ,
-            'text' => 'Find similar genomic contexts at LegumeFederation for : ' . $gene_name,
-        );
-    }
-    else if ($genus == 'Vigna' && $species == 'angularis') {
-        $link[] = array(
-            'href' => '/genomes/gbrowse/Va3.0?query=name=' . $gene_name,
-            'text' => 'view at LIS Va3.0 GBrowse: ' . $gene_name,
-        );
-    }
-    else if ($genus == 'Lupinus' && $species == 'angustifolius') {
-        $link[] = array(
-            'href' => '/genomes/gbrowse/La1.0?query=name=' . $gene_name,
-            'text' => 'view at LIS La1.0 GBrowse: ' . $gene_name,
-        );
-    }
-    else if ($genus == 'Vigna' && $species == 'radiata') {
-        $link[] = array(
-            'href' => '/genomes/gbrowse/Vr1.0?query=name=' . $gene_name,
-            'text' => 'view at LIS Vr1.0 GBrowse: ' . $gene_name,
-        );
-    }
-    else if ($genus == 'Medicago' && $species == 'truncatula') {
-        $link[] = array(
-            'href' => 'http://medicmine.jcvi.org/medicmine/portal.do?class=Gene&externalids=' . $gene_name ,
-            'text' => 'View MedicMine page for : ' . $gene_name,
-        );
-        $link[] = array(
-            'href' => 'http://www.medicagogenome.org/feature/' . $gene_name ,
-            'text' => 'View MTGD Mt4.0 Tripal page for : ' . $gene_name,
-        );
-        $link[] = array(
-            'href' => 'http://www.medicagogenome.org/jbrowse/?data=medicago&loc='.$transcript_name,
-            'text' => 'View at MTGD Mt4.0 JBrowse : ' . $transcript_name,
-        );
-        $link[] = array(
-            'href' => '/genomes/gbrowse/Mt4.0?query=name=' . $gene_name,
-            'text' => 'view at LIS Mt4.0 GBrowse: ' . $gene_name,
-        );
-/*
-        $link[] = array(
-            'href' => 'http://medtr.comparative-legumes.org/gb2/gbrowse/Mt3.5.1?name=' . $gene_name,
-            'text' => 'view at JLIS Mt3.5.1 GBrowse: ' . $gene_name,
-        );
-*/
-        $link[] = array(
-            'href' => 'http://www.medicagohapmap.org/fgb2/gbrowse/mt40/?name=' . $gene_name,
-            'text' => 'view at Mt HapMap: ' . $gene_name,
-        );
-        $link[] = array(
-            'href' => 'https://legumefederation.org/lis_context_viewer/#/search/lis/medtr.' . $gene_name . '?sources=lis%2Clfo&regexp=arath&neighbors=20&order=edit',
-            'text' => 'Look for Arabidopsis thaliana microsyntenic region for ' . $gene_name,
-        );
-        $link[] = array(
-            'href' => 'http://phytozome.jgi.doe.gov/pz/portal.html#!results?search=0&crown=1&star=0&method=4432&searchText=' . $gene_name,
-            'text' => 'view at Phytozome: ' . $gene_name,
-        );
-/*
-        $link[] = array(
-            'href' => 'http://plantgrn.noble.org/LegumeIP/getseq.do?dataset_id=4&seq_acc=IMGA|' . $transcript_name,
-            'text' => 'view at LegumeIP: ' . $transcript_name,
-        );
-*/
-        $link[] = array(
-            'href' => 'http://www.ncbi.nlm.nih.gov/gene/?term=' . $gene_name,
-            'text' => 'view at NCBI Gene: ' . $gene_name,
-        );
-/*
-        $link[] = array(
-            'href' => 'http://www.genomicus.biologie.ens.fr/genomicus-plants/cgi-bin/search.pl?view=default&amp;query=MTR_' . str_replace("Medtr","", $gene_name),
-            'text' => 'view at Genomicus: ' . $gene_name,
-        );
-*/
-    }
-    else if ($genus == 'Arachis' && $species == 'duranensis') {
-        $link[] = array(
-            'href' => 'http://peanutbase.org/gbrowse_aradu1.0?query=name=' . $gene_name . ';dbid=gene_models',
-            'text' => 'view at PeanutBase: ' . $gene_name,
-        );            
-    }
-    else if ($genus == 'Arachis' && $species == 'ipaensis') {
-        $link[] = array(
-            'href' => 'http://peanutbase.org/gbrowse_araip1.0?query=name=' . $gene_name . ';dbid=gene_models',
-            'text' => 'view at PeanutBase: ' . $gene_name,
-        );        
-    }
-    else if ($genus == 'Arabidopsis' && $species == 'thaliana') {
-        $gene_name = preg_replace('/\.\d+$/','',$transcript_name);
-        $context_viewer_name = 'arath.Col.'.$gene_name;
-        $link[] = array(
-            'href' => 'http://legumefederation.org/lis_context_viewer/#/search/lfo/' . $context_viewer_name,
-            'text' => 'Find similar genomic contexts at LegFed for : ' . $gene_name,
-        );
-        $link[] = array(
-            'href' => 'http://www.araport.org/locus/' . $gene_name,
-            'text' => 'view at Arabidopsis Information Portal: ' . $gene_name,
-        );
-        $link[] = array(
-            'href' => 'http://www.arabidopsis.org/servlets/TairObject?type=locus&name=' . $gene_name,
-            'text' => 'view at TAIR: ' . $gene_name,
-        );
-        $link[] = array(
-            'href' => 'http://phytozome.jgi.doe.gov/pz/portal.html#!results?search=0&crown=1&star=0&method=2296&searchText=' . $gene_name,
-            'text' => 'view at Phytozome: ' . $gene_name,
-        );
-    }
-    else if ($genus == 'Zea' && $species == 'mays') {
-        $gene_name = preg_replace('/_P\d+$/','',$transcript_name);
-        $link[] = array(
-            'href' => 'http://maizegdb.org/gene_center/gene?id=' . $gene_name,
-            'text' => 'view at MaizeGDB: ' . $gene_name,
-        );
-        $link[] = array(
-            'href' => 'http://www.gramene.org/Zea_mays/Gene/Summary?g=' . $gene_name,
-            'text' => 'view at Gramene: ' . $gene_name,
-        );
-        $link[] = array(
-            'href' => 'http://phytozome.jgi.doe.gov/pz/portal.html#!results?search=0&crown=1&star=0&method=4431&searchText=' . $gene_name,
-            'text' => 'view at Phytozome: ' . $gene_name,
-        );
-    }
-    else if ($genus == 'Oryza' && $species == 'sativa') {
-        $gene_name = preg_replace('/\.\d+$/','',$transcript_name);
-        $link[] = array(
-            'href' => 'http://rice.plantbiology.msu.edu/cgi-bin/gbrowse/rice/?name=' . $gene_name,
-            'text' => 'view at MSU: ' . $gene_name,
-        );
-        $link[] = array(
-            'href' => 'http://phytozome.jgi.doe.gov/pz/portal.html#!results?search=0&crown=1&star=0&method=5017&searchText=' . $gene_name,
-            'text' => 'view at Phytozome: ' . $gene_name,
-        );
-    }
-    else if ($genus == 'Vitis' && $species == 'vinifera') {
-        $gene_name = preg_replace('/\.\d+$/','',$transcript_name);
-        $link[] = array(
-            'href' => 'http://www.genoscope.cns.fr/cgi-bin/ggb/vitis/12X/gbrowse/vitis/?name=' . $gene_name,
-            'text' => 'view at Genoscope: ' . $gene_name,
-        );
-        $link[] = array(
-            'href' => 'http://phytozome.jgi.doe.gov/pz/portal.html#!results?search=0&crown=1&star=0&method=2299&searchText=' . $gene_name,
-            'text' => 'view at Phytozome: ' . $gene_name,
-        );
-    }
-    else if ($genus == 'Solanum' && $species == 'lycopersicum') {
-        $gene_name = preg_replace('/\.\d+$/','',$transcript_name);
-        $link[] = array(
-            'href' => 'http://solgenomics.net/jbrowse/current/?data=data%2Fjson%2FSL2.50&loc=' . $gene_name . '&tracks=DNA%2Cgene_models&highlight=',
-            'text' => 'view at Sol Genomics Network: ' . $gene_name,
-        );
-        $link[] = array(
-            'href' => 'http://phytozome.jgi.doe.gov/pz/portal.html#!results?search=0&crown=1&star=0&method=3308&searchText=' . $gene_name,
-            'text' => 'view at Phytozome: ' . $gene_name,
-        );
-    }
-    else if ($genus == 'Prunus' && $species == 'persica') {
-        $gene_name = preg_replace('/\.\d+$/','',$transcript_name);
-        $link[] = array(
-            'href' => 'http://phytozome.jgi.doe.gov/pz/portal.html#!results?search=0&crown=1&star=0&method=4909&searchText=' . $gene_name,
-            'text' => 'view at Phytozome: ' . $gene_name,
-        );
-    }
-    else if ($genus == 'Amborella' && $species == 'trichopoda') {
-        $link[] = array(
-            'href' => 'http://phytozome.jgi.doe.gov/pz/portal.html#!results?search=0&crown=1&star=0&method=4851&searchText=' . $transcript_name,
-            'text' => 'view at Phytozome: ' . $transcript_name,
-        );
+    else {
+        if (isset($gene_uniquename)) {
+            $default_url = 'http://bipaa.genouest.org/sp/%lower_genus%_%species%/feature/%genus%/%species%/polypeptide/%uniquename%';
+            $link[] = array(
+                'href' => str_replace(array_keys($replacements), $replacements, $default_url),
+                'text' => 'View gene page for: ' . $gene_name,
+            );
+        }
+        if (isset($gene_name)) {
+            $default_url = '../../lis_context_viewer/#/search/lis/%uniquename%';
+            $link[] = array(
+                'href' => '../../gcv/#/search/lis/'.$gene_name,
+                'text' => 'Find similar genomic contexts at LIS for : ' . $gene_name,
+            );
+        }
     }
 
-    set_response_headers();
-    drupal_json_output(handle_relative_links($link));  
+    drupal_json_output($link);
     drupal_exit();
 }
 
@@ -380,7 +95,7 @@ function full_gene_linkout_json($genus,$species,$gene_name,$gene_uniquename,$tra
  * Note: if using POST, use content-type:application/x-www-form-urlencoded
  * because PHP 5.6 will barf upon content-type:application/json.
  * see https://www.bram.us/2014/10/26/php-5-6-automatically-populating-http_raw_post_data-is-deprecated-and-will-be-removed-in-a-future-version/
- */ 
+ */
 function famreps_linkout_json() {
     if($_SERVER['REQUEST_METHOD'] == 'POST') {
         // if content was posted sent with application/json, this would be best:
@@ -395,18 +110,17 @@ function famreps_linkout_json() {
         $encoded = filter_input(INPUT_GET, 'famreps', FILTER_SANITIZE_ENCODED);
         $q = explode('%2C', $encoded);
     }
-    
+
     //find the gene by use of the "family representative" (ie label
     //used for the phylonode, typically a polypeptide name (we stole
     //this trick from the phylotree module)
-    $sql = <<<SQL
-          SELECT f.name AS gene_name
+    $sql = "SELECT f.name AS gene_name
           FROM chado.featureprop fp, chado.feature f
           WHERE fp.type_id = (SELECT cvterm_id FROM chado.cvterm
                               WHERE NAME = 'family representative')
           AND fp.value IN (:famreps)
-          AND fp.feature_id = f.feature_id
-SQL;
+          AND fp.feature_id = f.feature_id";
+
     // use chado_query(template, args) which 'will make sure that the
     // user input is santized and safe through type-checking and
     // escaping.'
@@ -428,7 +142,6 @@ SQL;
         'href' => 'https://mines.legumeinfo.org/legumemine/bag.do?type=Protein&text='.implode("%0A", $q),
         'text' => 'Create List in LegumeMine for given Proteins',
     );
-    set_response_headers();
     drupal_json_output(handle_relative_links($link));
     drupal_exit();
 }
