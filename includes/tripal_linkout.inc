@@ -77,8 +77,8 @@ function full_gene_linkout_json($genus,$species,$gene_name,$gene_uniquename,$tra
         if (isset($gene_name)) {
             $default_url = '../../lis_context_viewer/#/search/bipaa/%uniquename%';
             $link[] = array(
-                'href' => '../../gcv/#/search/bipaa/'.$gene_name,
-                'text' => 'Find similar genomic contexts at LIS for : ' . $gene_name,
+                'href' => '../gcv/#/search/bipaa/'.$gene_name,
+                'text' => 'Find similar genomic contexts for : ' . $gene_name,
             );
         }
     }
