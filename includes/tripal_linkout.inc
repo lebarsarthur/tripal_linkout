@@ -131,7 +131,11 @@ function full_gene_linkout_json($genus, $species, $pep_name, $pep_uniquename, $t
     }
 
     if (!empty($gene_name) && $show_gcv) {
-        $default_url = $base_url . '/../gcv/#/search/bipaa/%gene_name%';
+        if (substr($base_url, -6) === 'tripal')
+            $default_url = $base_url . '/../gcv/#/search/bipaa/%gene_name%';
+        else
+            $default_url = $base_url . '/../../gcv/#/search/bipaa/%gene_name%';
+
         $link[] = array(
             'href' => str_replace(array_keys($replacements), $replacements, $default_url),
             'text' => 'View genomic context for: ' . $gene_name,
