@@ -134,7 +134,7 @@ function full_gene_linkout_json($genus, $species, $pep_name, $pep_uniquename, $t
         if (substr($base_url, -6) === 'tripal')
             $default_url = $base_url . '/../gcv/#/search/bipaa/%gene_name%';
         else
-            $default_url = $base_url . '/../../gcv/#/search/bipaa/%gene_name%';
+            $default_url = $base_url . '/gcv/#/search/bipaa/%gene_name%';
 
         $link[] = array(
             'href' => str_replace(array_keys($replacements), $replacements, $default_url),
