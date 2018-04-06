@@ -90,12 +90,15 @@ function family_representative_linkout_json($genus, $species, $family_representa
 
 function full_gene_linkout_json($genus, $species, $pep_name, $pep_uniquename, $transcript_name, $gene_name, $show_gcv=TRUE) {
     $link =  [];
+    global $base_url;
 
-    $sp_split = explode(' ', $species);
-    $species = $sp_split[0];
+    $species = str_replace(' ', '-', $species);
 
     $sp_links = array();
-    $sp_links['bombyx_mori'] = array('http://example.org/%uniquename%');
+    $sp_links['bombyx_mori'] = array('http://example.org/%pep_uniquename%');
+    $sp_links['spodoptera_frugiperda-corn-3.0'] = array('http://bipaa.genouest.org/sp/spodoptera_frugiperda/feature/Spodoptera/frugiperda-corn/polypeptide/%pep_uniquename%');
+    $sp_links['spodoptera_frugiperda-corn-5.0'] = array('http://bipaa.genouest.org/sp/spodoptera_frugiperda/feature/Spodoptera/frugiperda-corn/polypeptide/%pep_uniquename%');
+    $sp_links['spodoptera_frugiperda-rice-3.0'] = array('http://bipaa.genouest.org/sp/spodoptera_frugiperda/feature/Spodoptera/frugiperda-rice/polypeptide/%pep_uniquename%');
 
     $org_str = strtolower($genus).'_'.$species;
 
@@ -105,10 +108,11 @@ function full_gene_linkout_json($genus, $species, $pep_name, $pep_uniquename, $t
         '%species%' => $species,
         '%pep_name%' => $pep_name,
         '%pep_uniquename%' => $pep_uniquename,
+        '%gene_name%' => $gene_name,
+        '%transcript_name%' => $transcript_name,
     );
 
     if (array_key_exists($org_str, $sp_links)) {
-
         foreach ($sp_links[$org_str] as $key => $linkstr) {
             $link[] = array(
                 'href' => str_replace(array_keys($replacements), $replacements, $linkstr),
@@ -124,13 +128,14 @@ function full_gene_linkout_json($genus, $species, $pep_name, $pep_uniquename, $t
                 'text' => 'View page for: ' . $pep_uniquename,
             );
         }
-        if (isset($pep_name) && $show_gcv) {
-            $default_url = '../../lis_context_viewer/#/search/bipaa/%pep_uniquename%';
-            $link[] = array(
-                'href' => '../../gcv/#/search/bipaa/' . $gene_name,
-                'text' => 'View genomic context for: ' . $gene_name,
-            );
-        }
+    }
+
+    if (!empty($gene_name) && $show_gcv) {
+        $default_url = $base_url . '/../gcv/#/search/bipaa/%gene_name%';
+        $link[] = array(
+            'href' => str_replace(array_keys($replacements), $replacements, $default_url),
+            'text' => 'View genomic context for: ' . $gene_name,
+        );
     }
 
     drupal_json_output($link);
