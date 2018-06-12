@@ -92,13 +92,21 @@ function full_gene_linkout_json($genus, $species, $pep_name, $pep_uniquename, $t
     $link =  [];
     global $base_url;
 
+    $current_gogepp = 'bipaa';
+    if (strpos($base_url, 'bbip.genouest.org') !== false) {
+        $current_gogepp = 'bbip';
+    }
+
+    $gogepp_url = 'http://'.$current_gogepp.'.genouest.org';
+
     $species = str_replace(' ', '-', $species);
 
     $sp_links = array();
     $sp_links['bombyx_mori'] = array('http://example.org/%pep_uniquename%');
-    $sp_links['spodoptera_frugiperda-corn-3.0'] = array('http://bipaa.genouest.org/sp/spodoptera_frugiperda/feature/Spodoptera/frugiperda-corn/polypeptide/%pep_uniquename%');
-    $sp_links['spodoptera_frugiperda-corn-5.0'] = array('http://bipaa.genouest.org/sp/spodoptera_frugiperda/feature/Spodoptera/frugiperda-corn/polypeptide/%pep_uniquename%');
-    $sp_links['spodoptera_frugiperda-rice-3.0'] = array('http://bipaa.genouest.org/sp/spodoptera_frugiperda/feature/Spodoptera/frugiperda-rice/polypeptide/%pep_uniquename%');
+    $sp_links['spodoptera_frugiperda-corn-3.0'] = array($gogepp_url . '/sp/spodoptera_frugiperda/feature/Spodoptera/frugiperda-corn/polypeptide/%pep_uniquename%');
+    $sp_links['spodoptera_frugiperda-corn-5.0'] = array($gogepp_url . '/sp/spodoptera_frugiperda/feature/Spodoptera/frugiperda-corn/polypeptide/%pep_uniquename%');
+    $sp_links['spodoptera_frugiperda-rice-3.0'] = array($gogepp_url . '/sp/spodoptera_frugiperda/feature/Spodoptera/frugiperda-rice/polypeptide/%pep_uniquename%');
+    $sp_links['arabidopsis_thaliana'] = array('http://plants.ensembl.org/Arabidopsis_thaliana/Gene/Summary?db=core;g=%gene_name%');
 
     $org_str = strtolower($genus).'_'.$species;
 
@@ -122,7 +130,7 @@ function full_gene_linkout_json($genus, $species, $pep_name, $pep_uniquename, $t
     }
     else {
         if (isset($pep_uniquename)) {
-            $default_url = 'http://bipaa.genouest.org/sp/%lower_genus%_%species%/feature/%genus%/%species%/polypeptide/%pep_uniquename%';
+            $default_url = $gogepp_url . '/sp/%lower_genus%_%species%/feature/%genus%/%species%/polypeptide/%pep_uniquename%';
             $link[] = array(
                 'href' => str_replace(array_keys($replacements), $replacements, $default_url),
                 'text' => 'View page for: ' . $pep_uniquename,
@@ -132,9 +140,9 @@ function full_gene_linkout_json($genus, $species, $pep_name, $pep_uniquename, $t
 
     if (!empty($gene_name) && $show_gcv) {
         if (substr($base_url, -6) === 'tripal')
-            $default_url = $base_url . '/../gcv/#/search/bipaa/%gene_name%';
+            $default_url = $base_url . '/../gcv/#/search/'.$current_gogepp.'/%gene_name%';
         else
-            $default_url = $base_url . '/gcv/#/search/bipaa/%gene_name%';
+            $default_url = $base_url . '/gcv/#/search/'.$current_gogepp.'/%gene_name%';
 
         $link[] = array(
             'href' => str_replace(array_keys($replacements), $replacements, $default_url),
