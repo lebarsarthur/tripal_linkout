@@ -102,10 +102,13 @@ function full_gene_linkout_json($genus, $species, $pep_name, $pep_uniquename, $t
     $species = str_replace(' ', '-', $species);
 
     $sp_links = array();
-    $sp_links['bombyx_mori'] = array('http://example.org/%pep_uniquename%');
-    $sp_links['spodoptera_frugiperda-corn-3.0'] = array($gogepp_url . '/sp/spodoptera_frugiperda/feature/Spodoptera/frugiperda-corn/polypeptide/%pep_uniquename%');
-    $sp_links['spodoptera_frugiperda-corn-5.0'] = array($gogepp_url . '/sp/spodoptera_frugiperda/feature/Spodoptera/frugiperda-corn/polypeptide/%pep_uniquename%');
-    $sp_links['spodoptera_frugiperda-rice-3.0'] = array($gogepp_url . '/sp/spodoptera_frugiperda/feature/Spodoptera/frugiperda-rice/polypeptide/%pep_uniquename%');
+    $sp_links['bombyx_mori'] = array('http://sgp.dna.affrc.go.jp/KAIKObase/keyword_search.php?keyword=%pep_uniquename%&field=all&chr_id=all&scaf_id=&data_set%5B%5D=gene&graph_view=on');
+    $sp_links['helicoverpa_armigera'] = array('https://www.ncbi.nlm.nih.gov/protein/%pep_uniquename%/');
+    $sp_links['heliconius_melpomene'] = array();
+    $sp_links['spodoptera_frugiperda-corn-v2.2'] = array($gogepp_url . '/apps/grs-2.3_sfru/grs?objectID=%pep_uniquename%&reportID=sfrudb_protein_report');
+    $sp_links['spodoptera_frugiperda-rice-v2.3'] = array($gogepp_url . '/apps/grs-2.3_sfru/grs?reportID=sfrudb_rice_protein_report&objectID=%pep_uniquename%');
+    $sp_links['spodoptera_frugiperda-corn-v5.0'] = array($gogepp_url . '/sp/spodoptera_frugiperda/feature/Spodoptera/frugiperda-corn/polypeptide/%pep_uniquename%');
+    $sp_links['spodoptera_frugiperda-rice-v3.0'] = array($gogepp_url . '/sp/spodoptera_frugiperda/feature/Spodoptera/frugiperda-rice/polypeptide/%pep_uniquename%');
     $sp_links['arabidopsis_thaliana'] = array('http://plants.ensembl.org/Arabidopsis_thaliana/Gene/Summary?db=core;g=%gene_name%');
 
     $org_str = strtolower($genus).'_'.$species;
