@@ -113,11 +113,14 @@ function full_gene_linkout_json($genus, $species, $pep_name, $pep_uniquename, $t
     $sp_links['aphis_glycines'] = array($gogepp_url . '/apps/grs-2.3_aglyc/grs?objectID=%pep_uniquename%&reportID=protein_report');
     $sp_links['myzus_persicae---clone-G006'] = array($gogepp_url . '/sp/myzus_persicae/feature/Myzus/persicae/polypeptide/%pep_uniquename%');
     $sp_links['myzus_persicae---clone-O'] = array($gogepp_url . '/sp/myzus_persicae/feature/Myzus/persicae/polypeptide/%pep_uniquename%');
+    $sp_links['rhodnius_prolixus'] = array('http://metazoa.ensembl.org/Rhodnius_prolixus/Search/Results?species=Rhodnius%20prolixus;idx=;q=%pep_uniquename_noPA%');
     $sp_links['nilaparvata_lugens'] = array('https://www.ncbi.nlm.nih.gov/protein/%pep_uniquename%/');
     $sp_links['drosophila_melanogaster'] = array('https://www.ncbi.nlm.nih.gov/protein/%pep_uniquename%/');
     $sp_links['arabidopsis_thaliana'] = array('http://plants.ensembl.org/Arabidopsis_thaliana/Gene/Summary?db=core;g=%gene_name%');
 
     $org_str = strtolower($genus).'_'.$species;
+
+    $pep_uniquename_noPA = explode('-P', $pep_uniquename)[0];
 
     $replacements = array(
         '%genus%' => $genus,
@@ -125,6 +128,7 @@ function full_gene_linkout_json($genus, $species, $pep_name, $pep_uniquename, $t
         '%species%' => $species,
         '%pep_name%' => $pep_name,
         '%pep_uniquename%' => $pep_uniquename,
+        '%pep_uniquename_noPA%' => $pep_uniquename_noPA,
         '%gene_name%' => $gene_name,
         '%transcript_name%' => $transcript_name,
     );
