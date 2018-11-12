@@ -10,7 +10,7 @@
 function gene_linkout_json($gene) {
     //find auxiliary info given the gene name
     //typically a polypeptide name (we stole this trick from the phylotree module)
-    $sql = "SELECT f.feature_id as feature_id, f.uniquename AS gene_uniquename, o.genus AS genus, o.species AS species
+    $sql = "SELECT f.feature_id as feature_id, f.uniquename AS gene_uniquename, o.genus AS genus, o.species AS species, o.organism_id as organism_id
             FROM chado.feature f, chado.organism o
             WHERE o.organism_id = f.organism_id
             AND f.name = :gene";
@@ -52,15 +52,16 @@ function gene_linkout_json($gene) {
     $fields['pep_uniquename'] = $new_fields['pep_uniquename'];
     $fields['pep_name'] = $new_fields['pep_name'];
 
-    full_gene_linkout_json($fields['genus'], $fields['species'], $fields['pep_name'], $fields['pep_uniquename'], $fields['mrna_uniquename'], $gene, FALSE);
+    full_gene_linkout_json($fields['genus'], $fields['species'], $fields['pep_name'], $fields['pep_uniquename'], $fields['mrna_uniquename'], $gene, FALSE, $fields['organism_id']);
 }
 
 function family_representative_linkout_json($genus, $species, $family_representative) {
     //find the gene by use of the "family representative" (ie label used for the phylonode,
     //typically a polypeptide name (we stole this trick from the phylotree module)
-    $sql = "SELECT f.name AS pep_name, f.uniquename AS pep_uniquename, f.feature_id AS pep_id
-          FROM chado.feature f
-          WHERE f.type_id = (SELECT cvterm_id FROM chado.cvterm
+    $sql = "SELECT f.name AS pep_name, f.uniquename AS pep_uniquename, f.feature_id AS pep_id, o.organism_id as organism_id
+          FROM chado.feature f, chado.organism o
+          WHERE o.organism_id = f.organism_id
+          AND f.type_id = (SELECT cvterm_id FROM chado.cvterm
                               WHERE NAME = 'polypeptide')
           AND f.name = :family_representative";
 
@@ -85,10 +86,10 @@ function family_representative_linkout_json($genus, $species, $family_representa
     $new_fields = $result->fetchAssoc();
     $fields['gene_uniquename'] = $new_fields['gene_uniquename'];
 
-    full_gene_linkout_json($genus, $species, $fields['pep_name'], $fields['pep_uniquename'], $family_representative, $fields['gene_uniquename']);
+    full_gene_linkout_json($genus, $species, $fields['pep_name'], $fields['pep_uniquename'], $family_representative, $fields['gene_uniquename'], TRUE, $fields['organism_id']);
 }
 
-function full_gene_linkout_json($genus, $species, $pep_name, $pep_uniquename, $transcript_name, $gene_name, $show_gcv=TRUE) {
+function full_gene_linkout_json($genus, $species, $pep_name, $pep_uniquename, $transcript_name, $gene_name, $show_gcv=TRUE, $organism_id=NULL) {
     $link =  [];
     global $base_url;
 
@@ -157,10 +158,14 @@ function full_gene_linkout_json($genus, $species, $pep_name, $pep_uniquename, $t
     }
 
     if (!empty($gene_name) && $show_gcv) {
+        $org = '';
+        if (!empty($organism_id)) {
+            $org = "/$organism_id";
+        }
         if (substr($base_url, -6) === 'tripal')
-            $default_url = $base_url . '/../gcv/#/search/'.$current_gogepp.'/%gene_name%';
+            $default_url = $base_url . '/../gcv/#/search/'.$current_gogepp.$org.'/%gene_name%';
         else
-            $default_url = $base_url . '/gcv/#/search/'.$current_gogepp.'/%gene_name%';
+            $default_url = $base_url . '/gcv/#/search/'.$current_gogepp.$org.'/%gene_name%';
 
         $link[] = array(
             'href' => str_replace(array_keys($replacements), $replacements, $default_url),
