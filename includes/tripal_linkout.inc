@@ -111,6 +111,8 @@ function full_gene_linkout_json($genus, $species, $pep_name, $pep_uniquename, $t
     $sp_links['spodoptera_frugiperda-corn-v5.0'] = array($gogepp_url . '/sp/spodoptera_frugiperda/feature/Spodoptera/frugiperda-corn/polypeptide/%pep_uniquename%');
     $sp_links['spodoptera_frugiperda-rice-v3.0'] = array($gogepp_url . '/sp/spodoptera_frugiperda/feature/Spodoptera/frugiperda-rice/polypeptide/%pep_uniquename%');
     $sp_links['aphis_glycines'] = array($gogepp_url . '/apps/grs-2.3_aglyc/grs?objectID=%pep_uniquename%&reportID=protein_report');
+    $sp_links['myzus_persicae---clone-G006'] = array($gogepp_url . '/sp/myzus_persicae/feature/Myzus/persicae/polypeptide/');
+    $sp_links['myzus_persicae---clone-O'] = array($gogepp_url . '/sp/myzus_persicae/feature/Myzus/persicae/polypeptide/');
     $sp_links['nilaparvata_lugens'] = array('https://www.ncbi.nlm.nih.gov/protein/%pep_uniquename%/');
     $sp_links['arabidopsis_thaliana'] = array('http://plants.ensembl.org/Arabidopsis_thaliana/Gene/Summary?db=core;g=%gene_name%');
 
