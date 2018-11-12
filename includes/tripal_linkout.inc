@@ -116,6 +116,7 @@ function full_gene_linkout_json($genus, $species, $pep_name, $pep_uniquename, $t
     $sp_links['rhodnius_prolixus'] = array('http://metazoa.ensembl.org/Rhodnius_prolixus/Search/Results?species=Rhodnius%20prolixus;idx=;q=%pep_uniquename_noPA%');
     $sp_links['nilaparvata_lugens'] = array('https://www.ncbi.nlm.nih.gov/protein/%pep_uniquename%/');
     $sp_links['drosophila_melanogaster'] = array('https://www.ncbi.nlm.nih.gov/protein/%pep_uniquename%/');
+    $sp_links['cimex_lectularius'] = array('https://www.ncbi.nlm.nih.gov/protein/%pep_uniquename%/');
     $sp_links['arabidopsis_thaliana'] = array('http://plants.ensembl.org/Arabidopsis_thaliana/Gene/Summary?db=core;g=%gene_name%');
 
     $org_str = strtolower($genus).'_'.$species;
