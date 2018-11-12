@@ -125,8 +125,7 @@ function full_gene_linkout_json($genus, $species, $pep_name, $pep_uniquename, $t
 
     $no_links = array(
         'duraphis_noxia'
-    )
-
+    );
 
     $replacements = array(
         '%genus%' => $genus,
