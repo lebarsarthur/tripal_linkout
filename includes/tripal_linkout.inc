@@ -123,6 +123,11 @@ function full_gene_linkout_json($genus, $species, $pep_name, $pep_uniquename, $t
 
     $pep_uniquename_noPA = explode('-P', $pep_uniquename)[0];
 
+    $no_links = array(
+        'duraphis_noxia'
+    )
+
+
     $replacements = array(
         '%genus%' => $genus,
         '%lower_genus%' => strtolower($genus),
@@ -142,7 +147,7 @@ function full_gene_linkout_json($genus, $species, $pep_name, $pep_uniquename, $t
             );
         }
     }
-    else {
+    else if (! in_array($org_str, $no_links)) {
         if (isset($pep_uniquename)) {
             $default_url = $gogepp_url . '/sp/%lower_genus%_%species%/feature/%genus%/%species%/polypeptide/%pep_uniquename%';
             $link[] = array(
