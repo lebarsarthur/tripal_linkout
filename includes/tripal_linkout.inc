@@ -77,8 +77,8 @@ function family_representative_linkout_json($genus, $species, $family_representa
           AND f.feature_id = fr.subject_id
           AND fr.object_id = f2.feature_id
           AND f.name = :gene
-          AND f.type_id = (SELECT cvterm_id FROM chado.cvterm
-                              WHERE NAME = 'mRNA')";
+          AND f.type_id in (SELECT cvterm_id FROM chado.cvterm
+                              WHERE name = 'mRNA' OR name = 'transcript')";
 
     $args = array(':gene' => $family_representative);
     $result = chado_query($sql, $args);
