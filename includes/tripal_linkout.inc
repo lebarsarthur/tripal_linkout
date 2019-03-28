@@ -119,6 +119,11 @@ function full_gene_linkout_json($genus, $species, $pep_name, $pep_uniquename, $t
     $sp_links['drosophila_melanogaster'] = array('https://www.ncbi.nlm.nih.gov/protein/%pep_uniquename%/');
     $sp_links['cimex_lectularius'] = array('https://www.ncbi.nlm.nih.gov/protein/%pep_uniquename%/');
     $sp_links['arabidopsis_thaliana'] = array('http://plants.ensembl.org/Arabidopsis_thaliana/Gene/Summary?db=core;g=%gene_name%');
+    $sp_links['fopius_arisanus'] = array('https://www.ncbi.nlm.nih.gov/protein/%pep_uniquename%/');
+    $sp_links['microplitis_demolitor'] = array('https://www.ncbi.nlm.nih.gov/protein/%pep_uniquename%/');
+    $sp_links['diachasma_alloeum'] = array('https://www.ncbi.nlm.nih.gov/protein/%pep_uniquename%/');
+    $sp_links['nasonia_vitripennis'] = array('https://www.ncbi.nlm.nih.gov/protein/%pep_uniquename%/');
+    $sp_links['apis_mellifera'] = array('https://www.ncbi.nlm.nih.gov/protein/%pep_uniquename%/');
 
     $org_str = strtolower($genus).'_'.$species;
 
