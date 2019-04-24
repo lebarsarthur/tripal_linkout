@@ -93,12 +93,16 @@ function full_gene_linkout_json($genus, $species, $pep_name, $pep_uniquename, $t
     $link =  [];
     global $base_url;
 
-    $current_gogepp = 'bipaa';
-    if (strpos($base_url, 'bbip.genouest.org') !== false) {
-        $current_gogepp = 'bbip';
-    }
 
-    $gogepp_url = 'http://'.$current_gogepp.'.genouest.org';
+    if(getenv("MAIN_TRIPAL_URL")){
+        $gogepp_url = getenv("MAIN_TRIPAL_URL");
+    } else {
+        $current_gogepp = 'bipaa';
+        if (strpos($base_url, 'bbip.genouest.org') !== false) {
+            $current_gogepp = 'bbip';
+        }
+        $gogepp_url = 'http://'.$current_gogepp.'.genouest.org';
+    }
 
     $species = str_replace(' ', '-', $species);
 
