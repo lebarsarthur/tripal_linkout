@@ -111,7 +111,7 @@ function full_gene_linkout_json($genus, $species, $pep_name, $pep_uniquename, $t
     $sp_links['spodoptera_frugiperda-rice-v2.3'] = array($gogepp_url . '/apps/grs-2.3_sfru/grs?reportID=sfrudb_rice_protein_report&objectID=%pep_uniquename%');
     $sp_links['spodoptera_frugiperda-corn-v5.0'] = array($gogepp_url . '/sp/spodoptera_frugiperda/feature/Spodoptera/frugiperda-corn/polypeptide/%pep_uniquename%');
     $sp_links['spodoptera_frugiperda-rice-v3.0'] = array($gogepp_url . '/sp/spodoptera_frugiperda/feature/Spodoptera/frugiperda-rice/polypeptide/%pep_uniquename%');
-    $sp_links['aphis_glycines'] = array($gogepp_url . '/apps/grs-2.3_aglyc/grs?objectID=%pep_uniquename%&reportID=protein_report');
+    $sp_links['aphis_glycines'] = array($gogepp_url . '/sp/aphis_glycines/feature/Aphis/glycines-Ag_bt4/polypeptide/%pep_uniquename%');
     $sp_links['myzus_persicae---clone-G006'] = array($gogepp_url . '/sp/myzus_persicae/feature/Myzus/persicae/polypeptide/%pep_uniquename%');
     $sp_links['myzus_persicae---clone-O'] = array($gogepp_url . '/sp/myzus_persicae/feature/Myzus/persicae/polypeptide/%pep_uniquename%');
     $sp_links['rhodnius_prolixus'] = array('http://metazoa.ensembl.org/Rhodnius_prolixus/Search/Results?species=Rhodnius%20prolixus;idx=;q=%pep_uniquename_noPA%');
