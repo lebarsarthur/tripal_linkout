@@ -105,7 +105,7 @@ function full_gene_linkout_json($genus, $species, $pep_name, $pep_uniquename, $t
     if(getenv("MAIN_TRIPAL_URL")){
         $gogepp_url = getenv("MAIN_TRIPAL_URL");
     } else {
-        $gogepp_url = 'http://'.$current_gogepp.'.genouest.org';
+        $gogepp_url = 'https://'.$current_gogepp.'.genouest.org';
     }
 
     $species = str_replace(' ', '-', $species);
