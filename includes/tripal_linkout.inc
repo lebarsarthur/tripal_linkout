@@ -18,7 +18,7 @@ function gene_linkout_json($gene) {
     $args = array(':gene' => $gene);
     $result = chado_query($sql, $args);
     $fields = $result->fetchAssoc();
-
+    $species_split = explode(" ", $species);
 
     // Get mRNA from gene
     $sql = "SELECT f2.uniquename AS mrna_uniquename, f2.feature_id AS mrna_id
@@ -111,9 +111,6 @@ function full_gene_linkout_json($genus, $species, $pep_name, $pep_uniquename, $t
     $species = str_replace(' ', '-', $species);
 
     $sp_links = array();
-    $sp_links['ectocarpus_species12'] = array($gogepp_url . '/sp/ectocarpus_species12/feature/Ectocarpus/%species%/polypeptide/%pep_uniquename%');
-    $sp_links['ectocarpus_species8'] = array($gogepp_url . '/sp/ectocarpus_species8/feature/Ectocarpus/%species%/polypeptide/%pep_uniquename%');
-
     $sp_links['bombyx_mori'] = array('http://sgp.dna.affrc.go.jp/KAIKObase/keyword_search.php?keyword=%pep_uniquename%&field=all&chr_id=all&scaf_id=&data_set%5B%5D=gene&graph_view=on');
     $sp_links['helicoverpa_armigera'] = array('https://www.ncbi.nlm.nih.gov/protein/%pep_uniquename%/');
     $sp_links['heliconius_melpomene'] = array();
@@ -148,6 +145,7 @@ function full_gene_linkout_json($genus, $species, $pep_name, $pep_uniquename, $t
         '%genus%' => $genus,
         '%lower_genus%' => strtolower($genus),
         '%species%' => $species,
+        '%species_split%' => $species_split,
         '%pep_name%' => $pep_name,
         '%pep_uniquename%' => $pep_uniquename,
         '%pep_uniquename_noPA%' => $pep_uniquename_noPA,
@@ -165,7 +163,7 @@ function full_gene_linkout_json($genus, $species, $pep_name, $pep_uniquename, $t
     }
     else if (! in_array($org_str, $no_links)) {
         if (isset($pep_uniquename)) {
-            $default_url = $gogepp_url . '/sp/%lower_genus%_%species%/feature/%genus%/%species%/polypeptide/%pep_uniquename%';
+            $default_url = $gogepp_url . '/sp/%lower_genus%_%species_split%/feature/%genus%/%species%/polypeptide/%pep_uniquename%';
             $link[] = array(
                 'href' => str_replace(array_keys($replacements), $replacements, $default_url),
                 'text' => 'View page for: ' . $pep_uniquename,
