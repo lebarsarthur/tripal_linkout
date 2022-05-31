@@ -18,7 +18,8 @@ function gene_linkout_json($gene) {
     $args = array(':gene' => $gene);
     $result = chado_query($sql, $args);
     $fields = $result->fetchAssoc();
-    $species_split = explode(" ", $species);
+    $species_exploded = explode(" ", $species);
+    $species_split = $species_exploded[0]
 
     // Get mRNA from gene
     $sql = "SELECT f2.uniquename AS mrna_uniquename, f2.feature_id AS mrna_id
