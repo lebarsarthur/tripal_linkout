@@ -53,7 +53,7 @@ function gene_linkout_json($gene) {
     $fields['pep_uniquename'] = $new_fields['pep_uniquename'];
     $fields['pep_name'] = $new_fields['pep_name'];
 
-    full_gene_linkout_json($fields['genus'], $fields['species'], $fields['pep_name'], $fields['pep_uniquename'], $fields['mrna_uniquename'], $gene, FALSE, $fields['organism_id']);
+    full_gene_linkout_json($fields['genus'], $fields['species'], $fields['species_split'], $fields['pep_name'], $fields['pep_uniquename'], $fields['mrna_uniquename'], $gene, FALSE, $fields['organism_id']);
 }
 
 function family_representative_linkout_json($genus, $species, $family_representative) {
@@ -90,7 +90,7 @@ function family_representative_linkout_json($genus, $species, $family_representa
     full_gene_linkout_json($genus, $species, $fields['pep_name'], $fields['pep_uniquename'], $family_representative, $fields['gene_uniquename'], TRUE, $fields['organism_id']);
 }
 
-function full_gene_linkout_json($genus, $species, $pep_name, $pep_uniquename, $transcript_name, $gene_name, $show_gcv=TRUE, $organism_id=NULL) {
+function full_gene_linkout_json($genus, $species, $species_split, $pep_name, $pep_uniquename, $transcript_name, $gene_name, $show_gcv=TRUE, $organism_id=NULL) {
     $link =  [];
     global $base_url;
 
