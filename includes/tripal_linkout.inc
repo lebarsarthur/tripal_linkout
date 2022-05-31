@@ -105,12 +105,14 @@ function full_gene_linkout_json($genus, $species, $pep_name, $pep_uniquename, $t
     if(getenv("MAIN_TRIPAL_URL")){
         $gogepp_url = getenv("MAIN_TRIPAL_URL");
     } else {
-        $gogepp_url = 'https://'.$current_gogepp.'.genouest.org';
+        $gogepp_url = 'https://'.$current_gogepp.'.genouest.org'; // change for production?
     }
 
     $species = str_replace(' ', '-', $species);
 
     $sp_links = array();
+    $sp_links['ectocarpus_sp12'] = array($gogepp_url . '/sp/ectocarpus_species12/feature/Ectocarpus/species12/polypeptide/%pep_uniquename%');
+
     $sp_links['bombyx_mori'] = array('http://sgp.dna.affrc.go.jp/KAIKObase/keyword_search.php?keyword=%pep_uniquename%&field=all&chr_id=all&scaf_id=&data_set%5B%5D=gene&graph_view=on');
     $sp_links['helicoverpa_armigera'] = array('https://www.ncbi.nlm.nih.gov/protein/%pep_uniquename%/');
     $sp_links['heliconius_melpomene'] = array();
