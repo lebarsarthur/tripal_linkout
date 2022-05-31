@@ -18,6 +18,8 @@ function gene_linkout_json($gene) {
     $args = array(':gene' => $gene);
     $result = chado_query($sql, $args);
     $fields = $result->fetchAssoc();
+
+    // Split species var to get only the first part of the string (containing only the "species" name)
     $species_exploded = explode(" ", $species);
     $species_split = $species_exploded[0];
 
