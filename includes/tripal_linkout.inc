@@ -108,6 +108,9 @@ function full_gene_linkout_json($genus, $species, $species_split, $pep_name, $pe
     }
 
     $species = str_replace(' ', '-', $species);
+    // Split species var to get only the first part of the string (containing only the "species" name)
+    $species_exploded = explode("-", $species);
+    $species_split = $species_exploded[0];
 
     $sp_links = array();
     $sp_links['bombyx_mori'] = array('http://sgp.dna.affrc.go.jp/KAIKObase/keyword_search.php?keyword=%pep_uniquename%&field=all&chr_id=all&scaf_id=&data_set%5B%5D=gene&graph_view=on');
@@ -134,21 +137,18 @@ function full_gene_linkout_json($genus, $species, $species_split, $pep_name, $pe
 
     $org_str = strtolower($genus).'_'.$species;
 
+    $pep_uniquename = str_replace('mRNA', 'prot', $pep_uniquename)
     $pep_uniquename_noPA = explode('-P', $pep_uniquename)[0];
 
     $no_links = array(
         'diuraphis_noxia'
     );
 
-    // Split species var to get only the first part of the string (containing only the "species" name)
-    $species_exploded = explode(" ", $species);
-    $species_split = $species_exploded[0];
-
     $replacements = array(
         '%genus%' => $genus,
         '%lower_genus%' => strtolower($genus),
         '%species%' => $species,
-        '%species_split%' => explode("-", $species)[0],
+        '%species_split%' => $species_split,
         '%pep_name%' => $pep_name,
         '%pep_uniquename%' => $pep_uniquename,
         '%pep_uniquename_noPA%' => $pep_uniquename_noPA,
