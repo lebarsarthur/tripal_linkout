@@ -156,13 +156,11 @@ function full_gene_linkout_json($genus, $species, $species_split, $pep_name, $pe
         '%transcript_name%' => $transcript_name,
     );
 
-    if (isset($pep_uniquename)) {
-        $default_url = $gogepp_url . '/sp/%lower_genus%_%species_split%/feature/%genus%/%species%/polypeptide/%pep_uniquename%';
-        $link[] = array(
-            'href' => str_replace(array_keys($replacements), $replacements, $default_url),
-            'text' => 'View page for: ' . $pep_uniquename,
-        );
-    }
+    $default_url = $gogepp_url . '/sp/%lower_genus%_%species_split%/feature/%genus%/%species%/polypeptide/%pep_uniquename%';
+    $link[] = array(
+        'href' => str_replace(array_keys($replacements), $replacements, $default_url),
+        'text' => 'View page for: ' . $pep_uniquename,
+    );
 
     if (!empty($gene_name) && $show_gcv) {
         $org = '';
