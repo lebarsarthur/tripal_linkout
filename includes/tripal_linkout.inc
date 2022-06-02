@@ -19,10 +19,6 @@ function gene_linkout_json($gene) {
     $result = chado_query($sql, $args);
     $fields = $result->fetchAssoc();
 
-    // Split species var to get only the first part of the string (containing only the "species" name)
-    $species_exploded = explode(" ", $species);
-    $species_split = $species_exploded[0];
-
     // Get mRNA from gene
     $sql = "SELECT f2.uniquename AS mrna_uniquename, f2.feature_id AS mrna_id
             FROM chado.feature f, chado.feature_relationship fr, chado.feature f2
@@ -144,9 +140,13 @@ function full_gene_linkout_json($genus, $species, $species_split, $pep_name, $pe
         'diuraphis_noxia'
     );
 
+    // Split species var to get only the first part of the string (containing only the "species" name)
+    $species_exploded = explode(" ", $species);
+    $species_split = $species_exploded[0];
+
     $replacements = array(
         '%genus%' => 'blabla',
-        '%lower_genus%' => 'blabla',
+        '%lower_genus%' => strtolower($genus),
         '%species%' => $species,
         '%species_split%' => $species_split,
         '%pep_name%' => $pep_name,
