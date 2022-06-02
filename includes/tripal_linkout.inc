@@ -137,7 +137,7 @@ function full_gene_linkout_json($genus, $species, $species_split, $pep_name, $pe
 
     $org_str = strtolower($genus).'_'.$species;
 
-    $pep_uniquename = str_replace('mRNA', 'prot', $pep_uniquename)
+    $pep_uniquename = str_replace('mRNA', 'prot', $pep_uniquename);
     $pep_uniquename_noPA = explode('-P', $pep_uniquename)[0];
 
     $no_links = array(
