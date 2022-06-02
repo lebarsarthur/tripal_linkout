@@ -147,8 +147,8 @@ function full_gene_linkout_json($genus, $species, $species_split, $pep_name, $pe
     $replacements = array(
         '%genus%' => 'blabla',
         '%lower_genus%' => strtolower($genus),
-        '%species%' => explode(" ", $species)[0],
-        '%species_split%' => $species_split,
+        '%species%' => $species,
+        '%species_split%' => explode(" ", $species)[0],
         '%pep_name%' => $pep_name,
         '%pep_uniquename%' => $pep_uniquename,
         '%pep_uniquename_noPA%' => $pep_uniquename_noPA,
