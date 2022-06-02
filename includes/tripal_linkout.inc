@@ -145,10 +145,10 @@ function full_gene_linkout_json($genus, $species, $species_split, $pep_name, $pe
     $species_split = $species_exploded[0];
 
     $replacements = array(
-        '%genus%' => 'blabla',
+        '%genus%' => $genus,
         '%lower_genus%' => strtolower($genus),
         '%species%' => $species,
-        '%species_split%' => explode(" ", $species)[0],
+        '%species_split%' => explode("_", $species)[0],
         '%pep_name%' => $pep_name,
         '%pep_uniquename%' => $pep_uniquename,
         '%pep_uniquename_noPA%' => $pep_uniquename_noPA,
