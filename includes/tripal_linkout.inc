@@ -145,7 +145,7 @@ function full_gene_linkout_json($genus, $species, $species_split, $pep_name, $pe
     );
 
     $replacements = array(
-        '%genus%' => $genus,
+        '%genus%' => 'blabla',
         '%lower_genus%' => strtolower($genus),
         '%species%' => $species,
         '%species_split%' => $species_split,
