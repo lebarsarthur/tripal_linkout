@@ -164,13 +164,14 @@ function full_gene_linkout_json($genus, $species, $species_split, $pep_name, $pe
     }
 
     if (!empty($gene_name) && $show_gcv) {
-
-        $org = "/$organism_id";
-
+        $org = '';
+        if (!empty($organism_id)) {
+            $org = "/$organism_id";
+        }
         if (substr($base_url, -6) === 'tripal')
-            $default_url = $base_url . '/../gcv/%gene_name%/search/'.$current_gogepp.$org.'/%gene_name%';
+            $default_url = $base_url . '/../gcv#/search/'.$current_gogepp.$org.'/%gene_name%';
         else
-            $default_url = $base_url . '/gcv/#/%gene_name%/'.$current_gogepp.$org.'/%gene_name%';
+            $default_url = $base_url . '/gcv/#/search/'.$current_gogepp.$org.'/%gene_name%';
 
         $link[] = array(
             'href' => str_replace(array_keys($replacements), $replacements, $default_url),
