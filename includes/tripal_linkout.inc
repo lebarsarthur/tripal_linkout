@@ -13,7 +13,7 @@ function gene_linkout_json($gene) {
     $sql = "SELECT f.feature_id as feature_id, f.uniquename AS gene_uniquename, o.genus AS genus, o.species AS species, o.organism_id as organism_id
             FROM chado.feature f, chado.organism o
             WHERE o.organism_id = f.organism_id
-            AND f.name = :gene";
+            AND f.uniquename = :gene";
 
     $args = array(':gene' => $gene);
     $result = chado_query($sql, $args);
