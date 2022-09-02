@@ -163,6 +163,9 @@ function full_gene_linkout_json($genus, $species, $species_split, $pep_name, $pe
         );
     }
 
+    // DOnt display gcv link
+    $show_gcv = False;
+
     if (!empty($gene_name) && $show_gcv) {
         $org = '';
         if (!empty($organism_id)) {
